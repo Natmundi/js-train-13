@@ -371,6 +371,18 @@ function processUrl(url, options) {
   // Якщо є, змінюємо хост 'urlObj' на хост з 'options'.
   // Повертаємо 'urlObj' у вигляді рядка за допомогою методу 'toString'.
   const newUrl = new URL(url);
+  if (options.searchParams) {
+    for (const key in options.searchParams) {
+      newUrl.searchParams.append(key, options.searchParams[key]);
+    }
+  }
+  if (options.protocol) {
+    newUrl.protocol = options.protocol;
+  }
+  if (options.host) {
+    newUrl.host = options.host;
+  }
+  return newUrl.toString();
 }
 
 // Приклад використання функції processURL
@@ -403,6 +415,18 @@ function manipulateQuery(url, options) {
   // ...перебираємо його значення за допомогою циклу for...of.
   // Видаляємо кожний ключ з об'єкта `searchParams` в URL.
   // Повертаємо новий URL як рядок.
+  let newUrl = new URL(url);
+  if (options.has("append")) {
+    for (let [key, value] of options.get("append")) {
+      newUrl.searchParams.append(key, value);
+    }
+  }
+  if (options.has("delete")) {
+    for (let value of options.get("delete")) {
+      newUrl.searchParams.delete(value);
+    }
+  }
+  return newUrl.toString();
 }
 
 console.log("Завдання: 12 ==============================");
@@ -480,6 +504,14 @@ function sortUrlParams(url) {
   // Очищуємо пошукові параметри URL.
   // Додаємо відсортовані параметри до URL.
   // Повертаємо новий URL як рядок.
+  const newUrl = new URL(url);
+  const arrKeys = Array.from(newUrl.searchParams.entries());
+  const sortedKey = arrKeys.sort((a, b) => a[0] - b[0]);
+  newUrl.search = "";
+  sortedKey.forEach(([key, value]) => {
+    newUrl.searchParams.append(key, value);
+  });
+  return newUrl.toString();
 }
 
 // Приклад використання функції sortUrlParams
@@ -505,6 +537,16 @@ function getURLValues(url) {
   // Отримуємо всі значення для даного ключа за допомогою методу `getAll`.
   // Додаємо значення до масиву.
   // Повертаємо масив значень пошукових параметрів.
+  const newUrl = new URL(url);
+  const URLSearchParams = newUrl.searchParams;
+  const arrKeys = Array.from(URLSearchParams.keys());
+  const arr = [];
+
+  for (const key of arrKeys) {
+    const paramKey = URLSearchParams.getAll(key);
+    arr.push(...paramKey);
+  }
+  return arr;
 }
 
 // Приклад використання функції getURLValues
